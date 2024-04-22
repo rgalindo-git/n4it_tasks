@@ -1,0 +1,23 @@
+create or replace TRIGGER secure_iso
+  BEFORE INSERT OR UPDATE OR DELETE ON item_loc_soh
+BEGIN
+  upd_isolation;
+END secure_iso;
+
+
+create or replace PROCEDURE upd_isolation
+IS
+BEGIN
+  IF TO_CHAR (SYSDATE, 'HH24:MI') NOT BETWEEN '08:00' AND '18:00'
+        OR TO_CHAR (SYSDATE, 'DY') IN ('SAT', 'SUN') THEN
+
+
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+  ELSE
+
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+
+  END IF;
+END upd_isolation;
